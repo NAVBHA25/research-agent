@@ -2,15 +2,23 @@
 Tool definitions for the agent.
 
 Each tool needs two things:
-  1. A JSON schema, so Claude knows the tool exists and how to call it
+  1. A JSON schema, so the model knows the tool exists and how to call it
   2. A Python function that actually performs the action
 
-Swap `web_search` for a real API (Tavily, SerpAPI, Brave Search, Anthropic's
-built-in web_search tool, etc.) once you move past the toy stage.
+web_search is wired up to Tavily (https://tavily.com), which has a free tier
+of 1,000 search credits/month, no card required. Set TAVILY_API_KEY as an
+environment variable (or put it in a .env file in the project root) before
+running the agent.
 """
 
 import ast
 import operator as op
+import os
+
+from dotenv import load_dotenv
+from tavily import TavilyClient
+
+load_dotenv()  # reads a .env file in the project root, if present
 
 # Tool schemas in Ollama's format (same shape as OpenAI function calling —
 # a "type": "function" wrapper around name/description/parameters).
@@ -77,15 +85,35 @@ def calculator(expression: str) -> str:
         return f"Error evaluating expression: {e}"
 
 
+_tavily_api_key = os.environ.get("TAVILY_API_KEY")
+_tavily_client = TavilyClient(api_key=_tavily_api_key) if _tavily_api_key else None
+
+
 def web_search(query: str) -> str:
-    # PLACEHOLDER — plug in a real search API here. Example with Tavily:
-    #   from tavily import TavilyClient
-    #   client = TavilyClient(api_key=os.environ["TAVILY_API_KEY"])
-    #   return json.dumps(client.search(query)["results"][:3])
-    return (
-        f"[stub] No live search connected. Replace tools.web_search() with a "
-        f"real API to actually search for: '{query}'."
-    )
+    """Real web search via Tavily's free tier (1,000 searches/month, no card)."""
+    if _tavily_client is None:
+        return (
+            "Error: TAVILY_API_KEY is not set. Get a free key at "
+            "https://tavily.com, then export it as an environment variable "
+            "(export TAVILY_API_KEY=tvly-...) or add it to a .env file."
+        )
+
+    try:
+        response = _tavily_client.search(query=query, max_results=3)
+    except Exception as e:
+        return f"Error calling Tavily: {e}"
+
+    results = response.get("results", [])
+    if not results:
+        return f"No results found for '{query}'."
+
+    # Keep it short and model-friendly: title + a trimmed snippet per result.
+    lines = []
+    for r in results:
+        title = r.get("title", "Untitled")
+        content = (r.get("content") or "")[:300]
+        lines.append(f"- {title}: {content}")
+    return "\n".join(lines)
 
 
 _DISPATCH = {"calculator": calculator, "web_search": web_search}

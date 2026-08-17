@@ -40,23 +40,31 @@ the math to a calculator tool, and only then answers.
 ```bash
 # 1. Install Ollama: https://ollama.com/download (or `brew install ollama`)
 # 2. Pull a tool-capable model
-ollama pull llama3.1
+ollama pull llama3.1   # or qwen2.5:7b
 
-# 3. Install Python deps and run
+# 3. Get a free Tavily API key (1,000 searches/month, no card): https://tavily.com
+cp .env.example .env
+# then paste your real key into .env, e.g. TAVILY_API_KEY=tvly-...
+
+# 4. Install Python deps and run
 python -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
 python agent.py
 ```
 
-No API key, no billing, no internet needed once the model is downloaded.
+The LLM itself is free and local (Ollama, no API key, no billing). Only
+`web_search` talks to an external service (Tavily's free tier) — if you skip
+the `.env` step, `web_search` will return a clear error telling you the key
+is missing, and `calculator` still works fine on its own.
 
 ## Files
 
 | File | Purpose |
 |---|---|
 | `agent.py` | The ReAct loop itself |
-| `tools.py` | Tool schemas + implementations (calculator, web_search stub) |
+| `tools.py` | Tool schemas + implementations (calculator, real Tavily web_search) |
 | `requirements.txt` | Dependencies |
+| `.env.example` | Template for your Tavily API key |
 
 ## Extending this
 
