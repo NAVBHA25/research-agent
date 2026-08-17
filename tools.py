@@ -12,30 +12,38 @@ built-in web_search tool, etc.) once you move past the toy stage.
 import ast
 import operator as op
 
+# Tool schemas in Ollama's format (same shape as OpenAI function calling —
+# a "type": "function" wrapper around name/description/parameters).
 TOOL_SCHEMAS = [
     {
-        "name": "calculator",
-        "description": "Evaluate a basic arithmetic expression, e.g. '12.5 * 3 + 1'.",
-        "input_schema": {
-            "type": "object",
-            "properties": {
-                "expression": {
-                    "type": "string",
-                    "description": "A math expression using + - * / ( ) and numbers.",
-                }
+        "type": "function",
+        "function": {
+            "name": "calculator",
+            "description": "Evaluate a basic arithmetic expression, e.g. '12.5 * 3 + 1'.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "expression": {
+                        "type": "string",
+                        "description": "A math expression using + - * / ( ) and numbers.",
+                    }
+                },
+                "required": ["expression"],
             },
-            "required": ["expression"],
         },
     },
     {
-        "name": "web_search",
-        "description": "Search the web and return a short summary of results for a query.",
-        "input_schema": {
-            "type": "object",
-            "properties": {
-                "query": {"type": "string", "description": "The search query."}
+        "type": "function",
+        "function": {
+            "name": "web_search",
+            "description": "Search the web and return a short summary of results for a query.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "query": {"type": "string", "description": "The search query."}
+                },
+                "required": ["query"],
             },
-            "required": ["query"],
         },
     },
 ]

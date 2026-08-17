@@ -1,8 +1,9 @@
 # Research Agent — a minimal agentic AI example
 
 A from-scratch example of the **ReAct** pattern (Reason → Act → Observe, loop)
-using the Anthropic API. No frameworks (no LangChain/LangGraph) — just the
-raw loop, so you can see exactly what "agentic" means under the hood.
+using [Ollama](https://ollama.com) to run a model **locally, for free, with
+no API key**. No frameworks (no LangChain/LangGraph) — just the raw loop, so
+you can see exactly what "agentic" means under the hood.
 
 ## The problem
 
@@ -37,12 +38,17 @@ the math to a calculator tool, and only then answers.
 ## Setup
 
 ```bash
+# 1. Install Ollama: https://ollama.com/download (or `brew install ollama`)
+# 2. Pull a tool-capable model
+ollama pull llama3.1
+
+# 3. Install Python deps and run
 python -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
-cp .env.example .env   # then add your ANTHROPIC_API_KEY
-export $(cat .env | xargs)   # or use python-dotenv / direnv
 python agent.py
 ```
+
+No API key, no billing, no internet needed once the model is downloaded.
 
 ## Files
 
@@ -51,7 +57,6 @@ python agent.py
 | `agent.py` | The ReAct loop itself |
 | `tools.py` | Tool schemas + implementations (calculator, web_search stub) |
 | `requirements.txt` | Dependencies |
-| `.env.example` | Env var template |
 
 ## Extending this
 
