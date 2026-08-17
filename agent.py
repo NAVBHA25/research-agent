@@ -27,8 +27,12 @@ SYSTEM_PROMPT = """You are a careful research assistant agent.
 You have access to two tools: `web_search` and `calculator`.
 Break multi-step questions into smaller steps. Use `web_search` to find facts
 you don't know, and `calculator` for any arithmetic. Never guess a number you
-could look up or compute instead. When you have the final answer, state it
-clearly and briefly explain how you got it."""
+could look up or compute instead. 
+IMPORTANT: Actually call tools using the tool-calling mechanism — never just
+describe a tool call as text in your answer. If you haven't received real
+tool results yet, you are not done.
+When you have the final answer, state it clearly and briefly explain how you
+got it."""
 
 
 def run_agent(question: str, max_steps: int = 8, verbose: bool = True) -> str:
