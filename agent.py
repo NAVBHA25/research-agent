@@ -21,7 +21,7 @@ APPROACH (ReAct: Reason -> Act -> Observe, repeat)
 import ollama
 from tools import TOOL_SCHEMAS, execute_tool
 
-MODEL =  "qwen2.5:7b"  #"llama3.1"  # swap for "qwen2.5:7b" if your machine is memory-limited
+MODEL =  "llama3.1"  # swap for "qwen2.5:7b" if your machine is memory-limited
 
 SYSTEM_PROMPT = """You are a careful research assistant agent.
 You have access to two tools: `web_search` and `calculator`.
